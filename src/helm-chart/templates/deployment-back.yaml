@@ -15,5 +15,6 @@ spec:
       containers:
       - name: back
         image: etangdesapplis/demo-site-back
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
