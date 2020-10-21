@@ -1,4 +1,4 @@
 { 
-    "backend": "http://back:5000",
+    "backend": "http://back",
     "backend-dev": "http://localhost:5000"
 }
