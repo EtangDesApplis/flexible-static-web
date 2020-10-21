@@ -11,7 +11,7 @@ class AdminUI extends Component {
   }
 
   handleSubmit(event) {
-    fetch(config.backend)
+    fetch(config.backend+"/read/")
       .then(response => response.json())
       //wait til the reponse from back end
       .then(data => {

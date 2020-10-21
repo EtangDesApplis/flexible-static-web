@@ -29,7 +29,7 @@ class ClientUI extends Component {
       //body: JSON.stringify({ title: 'React POST Request Example' })
       body: JSON.stringify({ name: this.state.name, phone: this.state.phone })
     };
-    fetch(config.backend,requestOptions)
+    fetch(config.backend+"/create/",requestOptions)
       .then(response => response.json())
       //wait til the reponse from back end
       .then(data => {
