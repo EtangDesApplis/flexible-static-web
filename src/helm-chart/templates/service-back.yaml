@@ -5,10 +5,10 @@ metadata:
   labels:
     app: back
 spec:
-  #type: NodePort
+  type: NodePort
   ports:
   - port: 5000
-    #nodePort: 32017
+    nodePort: 32020
     targetPort: 5000
     protocol: TCP
     name: http

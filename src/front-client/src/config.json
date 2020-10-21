@@ -1,1 +1,4 @@
-{ "backend":"http://back.chefphan.svc.cluster.local" }
+{ 
+    "backend-internal": "http://back.chefphan.svc.cluster.local",
+    "backend": "http://localhost:32020"
+}
