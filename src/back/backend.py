@@ -9,7 +9,8 @@ import pprint
 app = Flask(__name__)
 CORS(app)
 
-connection = MongoClient("myk3s.com",32017)
+#connection = MongoClient("myk3s.com",32017)
+connection = MongoClient("mongodb")
 db=connection['chefphan']
 
 
