@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back
+spec:
+  selector:
+    matchLabels:
+      app: back
+  replicas: {{ .Values.back.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: back
+    spec:
+      containers:
+      - name: back
+        image: "{{ .Values.back.image }}:{{ .Values.back.tag }}"
+        imagePullPolicy: {{ .Values.pullPolicy }}
+        ports:
+        - containerPort: 5000

@@ -1,0 +1,30 @@
+# Default values for helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+pullPolicy: Always
+
+back:
+  image: etangdesapplis/demo-site-back
+  tag: latest
+  nodePort: 32020
+  replicaCount: 1
+  url: "https://chefphan.com/back" # "http://myk3s.com:32020"
+
+admin:
+  image: etangdesapplis/demo-site-front-admin
+  tag: latest
+  nodePort: 32019
+
+client:
+  image: etangdesapplis/demo-site-front-client
+  tag: latest
+  nodePort: 32018
+  replicaCount: 1
+
+database:
+  image: mongo
+  tag: 4.4.1
+  nodePort: 32017
+  persistent:
+    enabled: false #when activated, data is stored on host location
+    hostPath: /home/ubuntu/databases/mongodb
