@@ -16,5 +16,8 @@ spec:
       - name: admin
         image: "{{ .Values.admin.image }}:{{ .Values.admin.tag }}"
         imagePullPolicy: {{ .Values.pullPolicy }}
+        env:
+        - name: BACKEND_URL
+          value: {{ .Values.back.url }}
         ports:
         - containerPort: 3000
