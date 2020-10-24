@@ -19,4 +19,4 @@ cd ../front-client
 docker build -t etangdesapplis/demo-site-front-client:$tag .
 docker push etangdesapplis/demo-site-front-client:$tag
 #clean up
-yes|docker system prune -a
+docker system prune -a
