@@ -24,6 +24,6 @@ EXPOSE 3000
 #
 RUN echo "sh updateURL.sh" > start.sh && \
     echo "npm run build" >> start.sh && \
-    echo "rm -rf public src package.json package-lock.json node_modules" >> start.sh && \
+    echo "#rm -rf public src package.json package-lock.json package.json_org node_modules" >> start.sh && \
     echo "serve -s build -l tcp://0.0.0.0:3000" >> start.sh
 CMD ["sh", "start.sh"]

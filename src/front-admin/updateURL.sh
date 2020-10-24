@@ -19,7 +19,8 @@ else
   echo "[INFO]: homepage is set to ${HOMEPAGE}"
   lineCount=`cat package.json|wc -l`
   nbToKeep=`expr $lineCount - 1`
-  head -$nbToKeep package.json > package.json
+  mv package.json package.json_org
+  head -$nbToKeep package.json_org > package.json
   echo "  ,\"homepage\": \"${HOMEPAGE}\"" >>package.json
   echo '}'>>package.json
 fi
