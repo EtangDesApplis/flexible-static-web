@@ -14,12 +14,14 @@ admin:
   image: etangdesapplis/demo-site-front-admin
   tag: latest
   nodePort: 32019
+  url: ""
 
 client:
   image: etangdesapplis/demo-site-front-client
   tag: latest
   nodePort: 32018
   replicaCount: 1
+  url: ""
 
 database:
   image: mongo
