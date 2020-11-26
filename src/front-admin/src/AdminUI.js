@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 import config from './config.json';
+import Keycloak from 'keycloak-js';
 
 class AdminUI extends Component {
   constructor(props) {
     super(props);
     this.state = {
-                  data: ''
+                  data: '',
+                  keycloak: null,
+                  authenticated: false
                  };
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    const keycloak = Keycloak('/keycloak.json');
+    keycloak.init({onLoad: 'login-required'}).then(authenticated => {
+      this.setState({ keycloak: keycloak, authenticated: authenticated })
+    })
   }
 
   handleSubmit(event) {
@@ -23,14 +33,19 @@ class AdminUI extends Component {
   }
   
   render() {
-      return (
+    if(this.state.keycloak){
+      if(this.state.authenticated) return(
         <div>
         <form onSubmit={this.handleSubmit}>
           <input type="submit" value="Show Database" />
         </form>
-      <p>{this.state.data}</p>
+        <p>{this.state.data}</p>
         </div>
-      );
+      ); else return(<div>Unable to authenticate!</div>);
+    }
+    return (
+      <div>Initializing Keycloak ...</div>
+    );
   }
 }
 
