@@ -14,14 +14,15 @@ admin:
   image: etangdesapplis/demo-site-front-admin
   tag: latest
   nodePort: 32019
-  url: ""
+  url: "https://chefphan.com/admin"
+  root: "admin"
 
 client:
   image: etangdesapplis/demo-site-front-client
   tag: latest
   nodePort: 32018
   replicaCount: 1
-  url: ""
+  url: "https://chefphan.com/client"
 
 database:
   image: mongo
