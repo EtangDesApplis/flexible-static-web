@@ -14,7 +14,16 @@ class AdminUI extends Component {
   }
 
   componentDidMount() {
-    const keycloak = Keycloak('/keycloak.json');
+    const keycloak = Keycloak(
+      {
+        "realm": "chefphan",
+        "auth-server-url": "https://chefphan.com/auth/",
+        "ssl-required": "external",
+        "resource": "adminconsole",
+        "public-client": true,
+        "confidential-port": 0
+      }
+    );
     keycloak.init({onLoad: 'login-required'}).then(authenticated => {
       this.setState({ keycloak: keycloak, authenticated: authenticated })
     })
