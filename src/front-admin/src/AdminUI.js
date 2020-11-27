@@ -15,7 +15,8 @@ class AdminUI extends Component {
   }
 
   componentDidMount() {
-    const keycloak = Keycloak(kcconfig);
+    //const keycloak = Keycloak(kcconfig);
+    const keycloak = Keycloak('/admin/keycloak.json');
     keycloak.init({onLoad: 'login-required'}).then(authenticated => {
       this.setState({ keycloak: keycloak, authenticated: authenticated })
     })
