@@ -4,5 +4,6 @@
     "ssl-required": "external",
     "resource": "adminconsole",
     "public-client": true,
-    "confidential-port": 0
+    "confidential-port": 0,
+    "clientId": "adminconsole"
 }
