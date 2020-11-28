@@ -23,6 +23,7 @@ client:
   nodePort: 32018
   replicaCount: 1
   url: "https://chefphan.com/client"
+  root: "client"
 
 database:
   image: mongo
