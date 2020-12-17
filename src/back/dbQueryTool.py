@@ -21,15 +21,38 @@ class dbQueryTool:
         #return details of all clients
         pass
     
-    def updateOrder(self,orderId,status):
+    def updateOrderStatus(self,orderId,status):
         #update status of Order
-        # if order status is changed to done (delivered) update client record too
-        order=self.db["orders"].find({"id":order_id})
-        pass
+        
+        order=self.db["orders"].find_one({"id":order_id})
+        try:
+            #update order
+            self.db["orders"].update_one(
+                {"id":order_id},
+                {"$set": {"status":status}})
+            if status=="done":
+                # if order status is changed to done (delivered) update client record too
+                client=self.db["clients"].find_one({"tel":order["tel"]})
+                for data in order["content"]:
+                    if data["item"] in client["BuyRecord"]:
+                        client["BuyRecord"][data["item"]]+=data["quantity"]
+                    else:
+                        client["BuyRecord"][data["item"]]=data["quantity"]
+                client["OrderRecord"]+=1
+                #update client
+                self.db["clients"].update_one(
+                    {"tel":order["tel"]},
+                    {"$set": {"status":"confirmed","OrderRecord":client["OrderRecord"],"BuyRecord":client["BuyRecord"]}})
 
-    def updateClient(self,phoneNb,status):
+        except Exception as error:
+            print(str(error))
+
+    def updateClientStatus(self,phoneNb,status):
         #update status of Client
-        pass
+        try:
+            self.db["client"].update_one(
+                {"tel":phoneNb},
+                {"$set": {"status":status}})
 
     def registerOrder(self,order):
         # order is an JSON
@@ -52,16 +75,16 @@ class dbQueryTool:
         reponse=""
         #YYYYMMDD-tel <= unique
         order_id="%s-%s"%(order["deliveryDate"],order["tel"])
-        if self.db["orders"].find({"id":order_id})==None:
+        if self.db["orders"].find_one({"id":order_id})==None:
             order["id"]=order_id
             #pending/confirmed/done/canceled/refused
             order["status"]="pending" 
             # if client does not exist, it will be create automatically
-            if self.db["clients"].find({"tel":order["tel"]})==None:
-                self.registerClient({\
-                    "tel":order["tel"], \
-                    "name": order["name"], \
-                    "adresse": order["deliveryAddr"] \
+            if self.db["clients"].find_one({"tel":order["tel"]})==None:
+                self.registerClient({
+                    "tel":order["tel"],
+                    "name": order["name"],
+                    "adresse": order["deliveryAddr"]
                 })
             self.db["orders"].insert_one(order)
             reponse="OK"
@@ -76,7 +99,7 @@ class dbQueryTool:
         #status: new/confirmed/vip/blacklisted
         client["status"]="new"
         client["OrderRecord"]=0
-        client["ItemRecord"]={}
+        client["BuyRecord"]={}
         self.db["clients"].insert_one(client)
 
 if __name__=="__main__":
