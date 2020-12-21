@@ -9,18 +9,67 @@ class dbQueryTool:
         # get list of orders and its status from a date timeStamp within nbOfDays days
         pass
 
+    def getSummary(self,timeStamp):
+        # list cake category vs quantiy of confirmed order
+        summary={}
+        for order in self.db["orders"].find({"deliveryDate":timeStamp,"status":"confirmed"}):
+            summary["value"]+=order["value"]
+            for detail in order["content"]:
+                if detail["item"] in summary:
+                    summary[detail["item"]]+=detail["quantity"]
+                else:
+                    summary[detail["item"]]=detail["quantity"]
+        return summary
+
     def getOrders(self,timeStamp):
         # get orders with details of a given date
-        pass
+        orders={}
+        i=1
+        for order in self.db["orders"].find({"deliveryDate":timeStamp}):
+            #return id, status, name, tel, clientStatus, deliveryAddr, deliveryDate, remarks, content, voucher, value
+            #return "total" section
+            orders[i]={
+                "id": order["id"],
+                "status": order["status"],
+                "name": order["name"],
+                "tel": order["tel"],
+                "clientStatus": self.getClientStatus(order["tel"]),
+                "deliveryAddr": order["deliveryAddr"],
+                "deliveryDate": order["deliveryDate"],
+                "remarks": order["remarks"],
+                "content": order["content"],
+                "voucher": order["voucher"],
+                "value": order["value"],
+            }
+            i=i+1
+        return orders
     
     def getClientStatus(self,phoneNb):
         #return status of client with telephone number
-        pass
+        client=self.db["clients"].find_one({"tel":phoneNb})
+        try:
+            return client["status"]
+        except Exception as error:
+            print(str(error))
+            return "unknown"
 
     def getClients(self):
         #return details of all clients
-        pass
-    
+        clients={}
+        i=1
+        for client in self.db["clients"].find():
+            # get back name, tel, status, address, OrderRecord, BuyRecord
+            clients[i]={
+                "name": client["name"],
+                "tel": client["tel"],
+                "status": client["status"],
+                "address": client["address"],
+                "OrderRecord": client["OrderRecord"],
+                "BuyRecord": client["BuyRecord"]
+            }
+            i=i+1
+        return clients
+
     def updateOrderStatus(self,orderId,status):
         #update status of Order
         
@@ -39,10 +88,12 @@ class dbQueryTool:
                     else:
                         client["BuyRecord"][data["item"]]=data["quantity"]
                 client["OrderRecord"]+=1
+                if client["status"]=="new":
+                    client["status"]="confirmed"
                 #update client
                 self.db["clients"].update_one(
                     {"tel":order["tel"]},
-                    {"$set": {"status":"confirmed","OrderRecord":client["OrderRecord"],"BuyRecord":client["BuyRecord"]}})
+                    {"$set": {"status":client["status"],"OrderRecord":client["OrderRecord"],"BuyRecord":client["BuyRecord"]}})
 
         except Exception as error:
             print(str(error))
@@ -84,7 +135,7 @@ class dbQueryTool:
                 self.registerClient({
                     "tel":order["tel"],
                     "name": order["name"],
-                    "adresse": order["deliveryAddr"]
+                    "address": order["deliveryAddr"]
                 })
             self.db["orders"].insert_one(order)
             reponse="OK"
