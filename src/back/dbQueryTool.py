@@ -1,4 +1,16 @@
 from pymongo import MongoClient
+from time import time
+from datetime import datetime
+
+def epoch2date(epoch):
+    return datetime.fromtimestamp(epoch).strftime("%Y%m%d")
+
+def date2epoch(timeStamp):
+    #timeStamp in form of YYYYMMDD
+    day=(timeStamp % 100)
+    month=(int(timeStamp/100) % 100)
+    year=int(timeStamp/10000)
+    return datetime(year,month,day,0,0).timestamp()
 
 class dbQueryTool:
     def __init__(self,target):
@@ -7,7 +19,17 @@ class dbQueryTool:
     
     def getOrderProjection(self,timeStamp,nbOfDays):
         # get list of orders and its status from a date timeStamp within nbOfDays days
-        pass
+        projection={}
+        epoch0=date2epoch(timeStamp)
+        for i in range(nbOfDays):
+            ts=epoch2date(epoch0+i*24*3600)
+            projection[ts]={}
+            for order in self.db["orders"].find({"deliveryDate":ts}):
+                if order["status"] in projection[ts]:
+                    projection[ts][order["status"]]+=1
+                else:
+                    projection[ts][order["status"]]=1
+        return projection
 
     def getSummary(self,timeStamp):
         # list cake category vs quantiy of confirmed order
