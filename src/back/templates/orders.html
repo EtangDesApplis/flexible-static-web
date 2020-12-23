@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+   <body>
+      <table border = 1>
+         <tr>
+            <th> Ngày-Tháng-Năm </th>
+            <th> Số khách hàng </th>
+            {% for title in data.category %}
+               <th> {{ title }} </th>
+            {% endfor %}
+         </tr>
+         {% for line in data.data %}
+            <tr>
+               <td style="text-align:center" bgcolor="{{ line['color'] }}"> {{ line['date'] }} </td>
+               <td style="text-align:center" bgcolor="{{ line['color'] }}"> {{ line['orderCount'] }} </td>
+               {% for title in data.category %}
+                  <td style="text-align:center" bgcolor="{{ line['color'] }}"> {{ line[title] }} </td>
+               {% endfor %}
+               <td>
+                  <form action="/detail" method="post">
+                     <input type="hidden" name="date" id ="to" value="{{ line['timeStamp'] }}">
+                     <button name="detail" type="submit">Xem chi tiết</button>
+                  </form>
+               </td>
+            </tr>
+         {% endfor %}
+      </table>
+   </body>
+</html>

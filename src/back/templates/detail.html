@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <body>
+        <div>
+            <section>
+                <nav>
+                    <ul>
+                        <li><a href="/orders">Lịch đặt hàng</a></li>
+                        <li><a href="/clients">Khách hàng</a></li>
+                    </ul>
+                </nav>
+                <article>
+                    <form action="/detail" method="post">
+                        <label for="timeStamp">Date</label>
+                        <input type="text" id="timeStamp" name="date" value={{ date }}>
+                        <input type="submit" value="Xem chi tiết">
+                    </form>
+                    <br/>
+                    {% for order in orders %}
+                    <table border = 1>
+                        <tr><td><form action="/detail" method="post">
+                            <div>
+                                <label for="name">Tên</label>
+                                <input type="text" id="name" value={{ order['name'] }}>
+                                <label for="tel">số điện thoại</label>
+                                <input type="text" id="tel" value={{ order['tel'] }}>
+                                <label for="status">Trạng thái khách hàng</label>
+                                <input type="text" id="status" value={{ order['clientStatus'] }}>
+                            </div>
+                            <div>
+                                <label for="addr">Địa chỉ giao hàng</label><br/>
+                                <textarea id="addr" rows="5" cols="50">{{ order['deliveryAddr'] }}</textarea>
+                            </div>
+                            <!--  Table of command details -->
+                            <div>
+                                <input type="hidden" name="date" value={{ order['deliveryDate'] }}>
+                                <input type="hidden" name="orderId" value={{ order['id'] }}>
+                                <label for="addr">Trạng thái đơn hàng</label>
+                                <input type="text" id="addr" value={{ order['status'] }}>
+                                <label for="remarks">Lưu ý</label>
+                                <textarea id="remarks">{{ order['remarks'] }}</textarea>
+                                <input type="submit" value="Cập nhật">
+                            </div>
+                        </form></td></tr>
+                    {% endfor %}
+                </article>
+            </section>
+        </div>
+    </body>
+</html>

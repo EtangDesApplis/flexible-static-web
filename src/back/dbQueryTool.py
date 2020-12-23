@@ -2,14 +2,20 @@ from pymongo import MongoClient
 from time import time
 from datetime import datetime
 
+def formatDate(timeStamp):
+    day=(int(timeStamp) % 100)
+    month=(int(int(timeStamp)/100) % 100)
+    year=int(int(timeStamp)/10000)
+    return "%02d-%02d-%04d"%(day,month,year)
+
 def epoch2date(epoch):
     return datetime.fromtimestamp(epoch).strftime("%Y%m%d")
 
 def date2epoch(timeStamp):
     #timeStamp in form of YYYYMMDD
-    day=(timeStamp % 100)
-    month=(int(timeStamp/100) % 100)
-    year=int(timeStamp/10000)
+    day=(int(timeStamp) % 100)
+    month=(int(int(timeStamp)/100) % 100)
+    year=int(int(timeStamp)/10000)
     return datetime(year,month,day,0,0).timestamp()
 
 class dbQueryTool:
@@ -19,17 +25,34 @@ class dbQueryTool:
     
     def getOrderProjection(self,timeStamp,nbOfDays):
         # get list of orders and its status from a date timeStamp within nbOfDays days
-        projection={}
+        """
+        Output:
+        {
+            "category":["cake1","cake2"],
+            "data": [
+                {"date":"DD-MM-YYYY","orderCount","timeStamp":"YYYYMMDD","cake1":1,"cake2":2,"color":"green"}
+            ]
+        }
+        """
         epoch0=date2epoch(timeStamp)
+        res={"category":[],"data":[]}
+        tmp_category=[]
         for i in range(nbOfDays):
             ts=epoch2date(epoch0+i*24*3600)
-            projection[ts]={}
+            tmp_data={"date":formatDate(ts),"orderCount":0,"timeStamp":ts,"color":"green"}
             for order in self.db["orders"].find({"deliveryDate":ts}):
-                if order["status"] in projection[ts]:
-                    projection[ts][order["status"]]+=1
-                else:
-                    projection[ts][order["status"]]=1
-        return projection
+                if order["status"] in ["pending", "confirmed", "done"]:
+                    tmp_data["orderCount"]+=1
+                    if order["status"]=="pending":
+                        tmp_data["color"]="yellow"
+                    for c in order["content"]:
+                        tmp_category.append(c["item"])
+                        tmp_data[c["item"]]=c["quantity"]
+            if tmp_data["orderCount"]==0:
+                tmp_data["color"]="white"
+            res["data"].append(tmp_data)
+        res["category"]=list(set(tmp_category))
+        return res
 
     def getSummary(self,timeStamp):
         # list cake category vs quantiy of confirmed order
@@ -45,12 +68,15 @@ class dbQueryTool:
 
     def getOrders(self,timeStamp):
         # get orders with details of a given date
-        orders={}
-        i=1
+        """
+        Output:
+
+        """
+        orders=[]
         for order in self.db["orders"].find({"deliveryDate":timeStamp}):
             #return id, status, name, tel, clientStatus, deliveryAddr, deliveryDate, remarks, content, voucher, value
             #return "total" section
-            orders[i]={
+            orders.append({
                 "id": order["id"],
                 "status": order["status"],
                 "name": order["name"],
@@ -62,8 +88,7 @@ class dbQueryTool:
                 "content": order["content"],
                 "voucher": order["voucher"],
                 "value": order["value"],
-            }
-            i=i+1
+            })
         return orders
     
     def getClientStatus(self,phoneNb):
@@ -126,6 +151,8 @@ class dbQueryTool:
             self.db["client"].update_one(
                 {"tel":phoneNb},
                 {"$set": {"status":status}})
+        except Exception as error:
+            print(str(error))
 
     def registerOrder(self,order):
         # order is an JSON
