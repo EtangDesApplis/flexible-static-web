@@ -18,27 +18,73 @@
                     <br/>
                     {% for order in orders %}
                     <table border = 1>
-                        <tr><td><form action="/detail" method="post">
+                        <tr><td {% if order['status'] == 'pending' %} bgcolor="yellow" {% endif %}><form action="/detail" method="post">
                             <div>
                                 <label for="name">Tên</label>
                                 <input type="text" id="name" value={{ order['name'] }}>
-                                <label for="tel">số điện thoại</label>
+                            </div>
+                            <div>
+                                <label for="tel">Số điện thoại</label>
                                 <input type="text" id="tel" value={{ order['tel'] }}>
-                                <label for="status">Trạng thái khách hàng</label>
-                                <input type="text" id="status" value={{ order['clientStatus'] }}>
+                            </div>
+                            <div>
+                                {% if order['clientStatus'] == 'confirmed' %}
+                                <p>Trạng thái khách hàng: <span style="background-color:green;">Khách quen</span></p>
+                                {% endif %}
+                                {% if order['clientStatus'] == 'new' %}
+                                <p>Trạng thái khách hàng: <span style="background-color:orange;">Khách mới</span></p>
+                                {% endif %}
+                                {% if order['clientStatus'] == 'vip' %}
+                                <p>Trạng thái khách hàng: <span style="background-color:cyan;">Khách VIP</span></p>
+                                {% endif %}
+                                {% if order['clientStatus'] == 'blacklisted' %}
+                                <p>Trạng thái khách hàng: <span style="background-color:red;">Kẻ phá thối</span></p>
+                                {% endif %}
                             </div>
                             <div>
                                 <label for="addr">Địa chỉ giao hàng</label><br/>
-                                <textarea id="addr" rows="5" cols="50">{{ order['deliveryAddr'] }}</textarea>
+                                <textarea id="addr" rows="4" cols="50">{{ order['deliveryAddr'] }}</textarea>
                             </div>
                             <!--  Table of command details -->
+                            <table border = 1>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá đơn vị</th>
+                                    <th>Giá</th>
+                                </tr>
+                                {% for e in order['content'] %}
+                                <tr>
+                                    <td>{{ e['item'] }}</td>
+                                    <td>{{ e['quantity'] }}</td>
+                                    <td>{{ e['unitprice'] }}</td>
+                                    <td>{{ e['price'] }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <th>Mã khuyến mãi</th>
+                                    <th>{{ order['voucher'] }}</th>
+                                    <th>Tổng cộng</th>
+                                    <th>{{ order['value'] }}</th>
+                                </tr>
+                            </table>
                             <div>
                                 <input type="hidden" name="date" value={{ order['deliveryDate'] }}>
                                 <input type="hidden" name="orderId" value={{ order['id'] }}>
-                                <label for="addr">Trạng thái đơn hàng</label>
-                                <input type="text" id="addr" value={{ order['status'] }}>
-                                <label for="remarks">Lưu ý</label>
-                                <textarea id="remarks">{{ order['remarks'] }}</textarea>
+                                <label for="status">Trạng thái đơn hàng</label>
+                                <select name="status" id="status" value={{ order['status'] }}>
+                                    <option value="pending" {% if order['status'] == 'pending' %} selected {% endif %}>Chờ xác nhận</option>
+                                    <option value="confirmed" {% if order['status'] == 'confirmed' %} selected {% endif %}>Xác nhận</option>
+                                    <option value="done" {% if order['status'] == 'done' %} selected {% endif %}>Hoàn thành</option>
+                                    <option value="canceled" {% if order['status'] == 'canceled' %} selected {% endif %}>Hủy</option>
+                                    <option value="refused" {% if order['status'] == 'refused' %} selected {% endif %}>Từ chối</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="remarks">Lưu ý</label><br/>
+                                <textarea id="remarks" rows="2" cols="50">{{ order['remarks'] }}</textarea>
+                            </div>
+                            <div>
                                 <input type="submit" value="Cập nhật">
                             </div>
                         </form></td></tr>

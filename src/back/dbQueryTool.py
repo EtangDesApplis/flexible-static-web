@@ -120,11 +120,11 @@ class dbQueryTool:
     def updateOrderStatus(self,orderId,status):
         #update status of Order
         
-        order=self.db["orders"].find_one({"id":order_id})
+        order=self.db["orders"].find_one({"id":orderId})
         try:
             #update order
             self.db["orders"].update_one(
-                {"id":order_id},
+                {"id":orderId},
                 {"$set": {"status":status}})
             if status=="done":
                 # if order status is changed to done (delivered) update client record too

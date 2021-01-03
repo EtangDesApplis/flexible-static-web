@@ -12,6 +12,18 @@ def detail():
 
     dbq=dbQueryTool(DB_URL)
     timeStamp=request.form.get('date')
+    try:
+        #try to update
+        print("try to update order")
+        orderId=request.form.get('orderId')
+        print(orderId)
+        status=request.form.get('status')
+        print(status)
+        dbq.updateOrderStatus(orderId,status)
+    except Exception as error:
+        print(str(error))
+
+    #update info: order status, address, remarks, contents
 
     #dict = {'date': data.get('date') , 'content':{'order1':50,'order2':60}}
     return render_template('detail.html', date=timeStamp, orders=dbq.getOrders(timeStamp))
@@ -22,13 +34,13 @@ def test():
     dbq.registerOrder(
         {
             "name": "client1",
-            "tel": "0912345678",
+            "tel": "0912345673",
             "deliveryAddr": "address",
-            "deliveryDate": "20201222",
+            "deliveryDate": "20201226",
             "remarks": "entry code",
             "content": [
-                {"item":"cake1", "quantity":1},
-                {"item":"cake2", "quantity":3},
+                {"item":"cake3", "quantity":1},
+                {"item":"cake2", "quantity":2},
             ],
             "voucher": "",
             "value": 100
